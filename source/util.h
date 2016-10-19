@@ -1,3 +1,4 @@
+#pragma once
 #include <3ds.h>
 #include <cstdio>
 #include <cstdlib>
@@ -25,5 +26,7 @@ FS_Path MakePath(const std::vector<T>& binary) {
 }
 
 std::vector<FS_DirectoryEntry> GetEntries(FS_Archive archive, const std::u16string& src_path);
+
+std::vector<std::string> SplitString(std::string str, std::string pattern);
 
 extern bool g_log;

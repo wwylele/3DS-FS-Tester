@@ -96,3 +96,20 @@ std::vector<FS_DirectoryEntry> GetEntries(FS_Archive archive, const std::u16stri
 
     return entries;
 }
+
+std::vector<std::string> SplitString(std::string str, std::string pattern) {
+    std::string::size_type pos;
+    std::vector<std::string> result;
+    str += pattern;
+    std::string::size_type size = str.size();
+
+    for(std::string::size_type i = 0; i < size; i++) {
+        pos = str.find(pattern, i);
+        if(pos < size) {
+            std::string s = str.substr(i, pos - i);
+            result.push_back(s);
+            i = pos + pattern.size() - 1;
+        }
+    }
+    return result;
+}

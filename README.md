@@ -20,10 +20,10 @@ When exploring the archive (by pressing A at the main menu), one can press START
    - `d p<path>` calls `DeleteFile`;
    - `dd p<path>` calls `DeleteDirectory`;
    - `dr p<path>` calls `DeleteDirectoryRecursively`;
-   - `o p<path> a<attributes> f<flags>` calls `OpenFile` (and `CloseFile` if necessary);
+   - `o p<path> a<attributes> f<flags>` calls `OpenFile`, and go to the file operation page;
    - `od p<path>` calls `OpenDirectory` (and `CloseDirectory` if necessary).
 
-Options in these commands are optional. `<path>` is a string without space. `<attributes>` and `<size>` are a raw u32 value, `<flags>` is a character sequence composed by `r`(read), `w`(write) and/or `c`(create).
+Options in these commands are optional. `<path>` is a string without space. `<attributes>` and `<size>` are raw u32 values, `<flags>` is a character sequence composed by `r`(read), `w`(write) and/or `c`(create).
 
 Here are some example:
 
@@ -33,3 +33,11 @@ c p/a_folder/a_file s0x100
 o p/a_folder/a_file a0 frw
 dr p/a_folder
 ```
+
+On the file operation page, you can also input these command:
+   - `r s<size> o<offset>` calls `Read`
+   - `w o<offset> q<option> d<hex-string-data>` calls `Write`
+   - `ss s<size>` calls `SetSize`
+   - `gs` calls `GetSize`
+   
+`<size>`, `<offset>` and `<option>` are raw u32 values. `<hex-string-data>` represents a byta array (e.g. "123456" represents array {0x12, 0x34, 0x56})

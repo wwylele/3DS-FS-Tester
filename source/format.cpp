@@ -23,12 +23,12 @@ static void PrintUI() {
     consoleClear();
 
     printf("\x1b[3;0H\x1b[31mFormat save / extsave\x1b[0m\n\n");
-    printf("    Hold SELECT and press A - format current save!\n");
-    printf("    Hold SELECT and press X - delete self extsave!\n");
-    printf("    Hold SELECT and press Y - create self extsave!\n");
-    printf("    B - back\n");
-    printf("    D-pad - move cursor\n");
-    printf("    L/R - edit attributes\n");
+    printf("Hold SELECT and press A - format current save!\n");
+    printf("Hold SELECT and press X - delete self extsave!\n");
+    printf("Hold SELECT and press Y - create self extsave!\n");
+    printf("B - back\n");
+    printf("D-pad - move cursor\n");
+    printf("L/R - edit attributes\n");
 
     printf("\x1b[12;0H");
     printf("  Dir count    =\n");

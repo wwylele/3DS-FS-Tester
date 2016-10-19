@@ -1,5 +1,7 @@
 #include "util.h"
 #include "dir.h"
+#include "file.h"
+#include "command.h"
 
 const int MAX_DISPLAY_ENTRY = 20;
 
@@ -38,49 +40,6 @@ static void PrintUI(u32 cursor, u32 display_offset, const std::u16string& path, 
             is_ro ? '$' : ' ',
             name_c.data());
     }
-}
-
-static std::string GetCommand() {
-    static SwkbdState swkbd;
-	static char mybuf[60];
-
-	swkbdInit(&swkbd, SWKBD_TYPE_WESTERN, 2, -1);
-	swkbdSetValidation(&swkbd, SWKBD_NOTEMPTY_NOTBLANK, 0, 0);
-	swkbdSetHintText(&swkbd, "Please input a command.");
-
-	if (SWKBD_BUTTON_RIGHT != swkbdInputText(&swkbd, mybuf, sizeof(mybuf)))
-        return "";
-
-    return mybuf;
-}
-
-std::vector<std::string> SplitString(std::string str, std::string pattern) {
-    std::string::size_type pos;
-    std::vector<std::string> result;
-    str += pattern;
-    std::string::size_type size = str.size();
-
-    for(std::string::size_type i = 0; i < size; i++) {
-        pos = str.find(pattern, i);
-        if(pos < size) {
-            std::string s = str.substr(i, pos - i);
-            result.push_back(s);
-            i = pos + pattern.size() - 1;
-        }
-    }
-    return result;
-}
-
-template <typename T>
-bool ParseParams(const std::vector<std::string>& params, T parser) {
-    for (unsigned i = 1; i < params.size(); ++i) {
-        if (params[i].size() < 1) continue;
-        if (!parser(params[i][0], params[i].substr(1))) {
-            Log("ParseParams: unknown param \"%s\"\n", params[i].data());
-            return false;
-        }
-    }
-    return true;
 }
 
 static void RunCommand(FS_Archive archive, const std::string& command) {
@@ -168,6 +127,7 @@ static void RunCommand(FS_Archive archive, const std::string& command) {
     } else if (params[0] == "o") {
         std::string path = "";
         u32 flags = 0;
+        std::string flag_string;
         u32 attr = 0;
         if (!ParseParams(params, [&](char slot, const std::string& content) {
             switch (slot) {
@@ -178,6 +138,7 @@ static void RunCommand(FS_Archive archive, const std::string& command) {
                 attr = std::strtoul(content.data(), 0, 0);
                 return true;
             case 'f':
+                flag_string = content;
                 for (char f : content) {
                     if (f == 'r') {
                         flags |= FS_OPEN_READ;
@@ -195,6 +156,7 @@ static void RunCommand(FS_Archive archive, const std::string& command) {
         Log("OpenFile(\"%s\", flag=%d, attr=0x%08X)\n", path.data(), flags, attr);
         Handle file;
         if (ParseResult(FSUSER_OpenFile(&file, archive, MakePath(ConvertString(path)), flags, attr))) {
+            Scene_File(file, path + " flags=" + flag_string);
             FSFILE_Close(file);
         }
     } else if (params[0] == "od") {
@@ -213,6 +175,8 @@ static void RunCommand(FS_Archive archive, const std::string& command) {
         if (ParseResult(FSUSER_OpenDirectory(&dir, archive, MakePath(ConvertString(path))))) {
             FSDIR_Close(dir);
         }
+    } else {
+        Log("Unknown command %s\n", params[0].data());
     }
 }
 
